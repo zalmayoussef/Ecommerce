@@ -2,7 +2,6 @@ package com.example.ecommerce.controllers;
 
 import com.example.ecommerce.models.Order;
 import com.example.ecommerce.repositories.OrderRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,9 +10,11 @@ import java.util.List;
 @RequestMapping("/api/orders")
 public class OrderController {
 
-    @Autowired
-    private OrderRepository orderRepository;
-
+    private final OrderRepository orderRepository;
+    // injects OrderRepository through constructor
+    public OrderController(OrderRepository orderRepository) {
+        this.orderRepository = orderRepository;
+    }
     @PostMapping
     public Order createOrder(@RequestBody Order order) {
         return orderRepository.save(order);
