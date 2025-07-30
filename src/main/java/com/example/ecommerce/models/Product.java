@@ -3,8 +3,11 @@ package com.example.ecommerce.models;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.List;
+import lombok.*;
 
 @Entity
+@Getter
+@Setter
 public class Product {
 
     @Id
@@ -22,27 +25,4 @@ public class Product {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems;
 
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 }

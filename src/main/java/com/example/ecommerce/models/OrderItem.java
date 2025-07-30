@@ -2,8 +2,11 @@ package com.example.ecommerce.models;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import lombok.*;
 
 @Entity
+@Getter
+@Setter
 public class OrderItem {
 
     @Id
