@@ -41,6 +41,7 @@ public class CustomerController {
                 .map(customer -> {
                     customer.setName(updatedCustomer.getName());
                     customer.setEmail(updatedCustomer.getEmail());
+                    customer.setAddress(updatedCustomer.getAddress());
                     return customerRepository.save(customer);
                 }).orElse(null);
     }

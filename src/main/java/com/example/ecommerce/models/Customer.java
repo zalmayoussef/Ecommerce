@@ -16,6 +16,7 @@ public class Customer {
     @Column(nullable = false, unique = true, length = 100)
     private String email;
 
+    @Column(nullable = false, length = 100)
     private String address;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
@@ -37,4 +38,11 @@ public class Customer {
         this.name = name;
     }
 
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
 }
