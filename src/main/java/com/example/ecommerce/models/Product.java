@@ -6,8 +6,7 @@ import java.util.List;
 import lombok.*;
 
 @Entity
-@Getter
-@Setter
+@Data
 public class Product {
 
     @Id

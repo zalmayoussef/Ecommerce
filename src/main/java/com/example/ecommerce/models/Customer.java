@@ -4,9 +4,8 @@ import jakarta.persistence.*;
 import java.util.List;
 import lombok.*;
 
+@Data
 @Entity
-@Getter
-@Setter
 public class Customer {
 
     @Id

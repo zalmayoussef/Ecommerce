@@ -5,8 +5,7 @@ import java.math.BigDecimal;
 import lombok.*;
 
 @Entity
-@Getter
-@Setter
+@Data
 public class OrderItem {
 
     @Id

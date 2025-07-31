@@ -1,6 +1,8 @@
 package com.example.ecommerce.models;
 
 import jakarta.persistence.*;
+
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -8,8 +10,7 @@ import lombok.*;
 
 @Entity
 @Table(name = "orders")
-@Getter
-@Setter
+@Data
 public class Order {
 
     @Id
@@ -20,11 +21,14 @@ public class Order {
     @Temporal(TemporalType.TIMESTAMP)
     private Date orderDate;
 
-    @ManyToMany
-    @JoinTable(
-            name = "order_products",
-            joinColumns = @JoinColumn(name = "order_id"),
-            inverseJoinColumns = @JoinColumn(name = "product_id")
-    )
-    private List<Product> products;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItem> items;
+
+    // total order price
+    public BigDecimal getTotalPrice() {
+        return items.stream()
+                .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
 }

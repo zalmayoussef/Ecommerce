@@ -1,22 +1,56 @@
 package com.example.ecommerce.controllers;
 
+import com.example.ecommerce.dto.OrderDTO;
+import com.example.ecommerce.dto.OrderItemDTO;
 import com.example.ecommerce.models.Order;
+import com.example.ecommerce.models.OrderItem;
+import com.example.ecommerce.models.Product;
 import com.example.ecommerce.repositories.OrderRepository;
+import com.example.ecommerce.repositories.ProductRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
 
+
+import java.math.BigDecimal;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/orders")
+@RequestMapping("/orders")
+@RequiredArgsConstructor
 public class OrderController {
 
     private final OrderRepository orderRepository;
-    // injects OrderRepository through constructor
-    public OrderController(OrderRepository orderRepository) {
-        this.orderRepository = orderRepository;
-    }
+    private final ProductRepository productRepository;
+
     @PostMapping
-    public Order createOrder(@RequestBody Order order) {
+    public Order createOrder(@RequestBody OrderDTO orderDTO) {
+        Order order = new Order();
+        order.setCustomer(orderDTO.getCustomer());
+        order.setOrderDate(Date.from(orderDTO.getOrderDate().atZone(ZoneId.systemDefault()).toInstant()));
+
+        List<OrderItem> items = new ArrayList<>();
+        BigDecimal totalPrice = BigDecimal.ZERO;
+
+        for (OrderItemDTO itemDTO : orderDTO.getItems()) {
+            Product product = productRepository.findById(itemDTO.getProductId())
+                    .orElseThrow(() -> new RuntimeException("Product not found: " + itemDTO.getProductId()));
+
+            OrderItem item = new OrderItem();
+            item.setOrder(order);
+            item.setProduct(product);
+            item.setQuantity(itemDTO.getQuantity());
+            item.setPrice(product.getPrice().multiply(BigDecimal.valueOf(itemDTO.getQuantity())));
+
+            totalPrice = totalPrice.add(item.getPrice());
+            items.add(item);
+        }
+
+        order.setItems(items);
+        // You can save total price in a new field if needed — not shown in entity yet
         return orderRepository.save(order);
     }
 
@@ -26,22 +60,17 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    public Order getOrderById(@PathVariable Long id) {
-        return orderRepository.findById(id).orElse(null);
-    }
-
-    @PutMapping("/{id}")
-    public Order updateOrder(@PathVariable Long id, @RequestBody Order updatedOrder) {
-        return orderRepository.findById(id).map(order -> {
-            order.setCustomer(updatedOrder.getCustomer());
-            order.setProducts(updatedOrder.getProducts());
-            order.setOrderDate(updatedOrder.getOrderDate());
-            return orderRepository.save(order);
-        }).orElse(null);
+    public Order getOrder(@PathVariable Long id) {
+        return orderRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteOrder(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
+        if (!orderRepository.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
         orderRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }
