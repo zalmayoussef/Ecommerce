@@ -37,7 +37,7 @@ public class OrderController {
 
         for (OrderItemDTO itemDTO : orderDTO.getItems()) {
             Product product = productRepository.findById(itemDTO.getProductId())
-                    .orElseThrow(() -> new RuntimeException("Product not found: " + itemDTO.getProductId()));
+                    .orElseThrow(() -> new RuntimeException("product not found: " + itemDTO.getProductId()));
 
             OrderItem item = new OrderItem();
             item.setOrder(order);
@@ -48,9 +48,7 @@ public class OrderController {
             totalPrice = totalPrice.add(item.getPrice());
             items.add(item);
         }
-
         order.setItems(items);
-        // You can save total price in a new field if needed — not shown in entity yet
         return orderRepository.save(order);
     }
 
