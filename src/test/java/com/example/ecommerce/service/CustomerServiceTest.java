@@ -6,6 +6,8 @@ import com.example.ecommerce.repositories.CustomerRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class CustomerServiceTest {
@@ -31,6 +33,44 @@ class CustomerServiceTest {
         assertEquals("John",customerDTO.getName());
         assertEquals("john@gmail.com", customerDTO.getEmail());
         assertEquals("street 19 maadi", customerDTO.getAddress());
+
+    }
+
+    @Test
+    void updateCustomerReturnsDataCorrectly(){
+        CustomerRepository mockCustomerRepository = Mockito.mock(CustomerRepository.class);
+        CustomerService customerService = new CustomerService(mockCustomerRepository);
+
+        // new update dto data
+        CustomerDTO dto = new CustomerDTO();
+        dto.setName("Salma");
+        dto.setEmail("salma@gmail.com");
+        dto.setAddress("15 fareed street");
+
+        // existing customer from DB
+        Customer existingCustomer = new Customer();
+        existingCustomer.setId(1L);
+        existingCustomer.setName("ola");
+        existingCustomer.setEmail("ola@email.com");
+        existingCustomer.setAddress("12 Address");
+
+        // updated customer after save
+        Customer updatedCustomer = new Customer();
+        updatedCustomer.setId(1L);
+        updatedCustomer.setName("Salma");
+        updatedCustomer.setEmail("salma@gmail.com");
+        updatedCustomer.setAddress("15 Fareed Street");
+
+        Mockito.when(mockCustomerRepository.findById(Mockito.any())).thenReturn(Optional.of(existingCustomer));
+        Mockito.when(mockCustomerRepository.save(Mockito.any())).thenReturn(updatedCustomer);
+
+        // prepare test results
+        Optional<CustomerDTO> result = customerService.updateCustomer(existingCustomer.getId(), dto);
+
+        assertTrue(result.isPresent());
+        assertEquals("Salma", result.get().getName());
+        assertEquals("salma@gmail.com", result.get().getEmail());
+        assertEquals("15 Fareed Street", result.get().getAddress());
 
     }
 }
