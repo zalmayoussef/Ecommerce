@@ -41,7 +41,7 @@ class ProductServiceTest {
         assertEquals(1L, result.getId());
         assertEquals("Laptop", result.getName());
         assertEquals("Gaming laptop", result.getDescription());
-        assertEquals(40000, result.getPrice());
+        assertEquals(BigDecimal.valueOf(40000), result.getPrice());
     }
 
     @Test
