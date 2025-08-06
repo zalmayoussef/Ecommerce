@@ -8,6 +8,7 @@ It simulates a basic online shopping platform where users can browse and purchas
 # Features
 - REST APIs for products and orders
 - Java 17 + Spring Boot 3
+- Unit tests using JUint
 - PostgreSQL (local setup)
 - Lombok for boilerplate reduction
 - Swagger documentation (/swagger-ui/index.html)
@@ -25,6 +26,7 @@ It simulates a basic online shopping platform where users can browse and purchas
 # Tech Stack
 - Java 17
 - Spring Boot
+- JUint
 - PostgreSQL
 - Swagger 
 - Maven
