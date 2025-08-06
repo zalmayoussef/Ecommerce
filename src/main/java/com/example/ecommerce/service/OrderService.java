@@ -66,7 +66,7 @@ public class OrderService {
 
     private OrderDTO convertToDTO(Order order) {
         List<OrderItemDTO> items = order.getItems().stream()
-                .map(item -> new OrderItemDTO(item.getProduct().getId(), item.getQuantity()))
+                .map(item -> new OrderItemDTO(item.getProduct().getId(), item.getQuantity(), item.getPrice()))
                 .toList();
 
         return new OrderDTO(

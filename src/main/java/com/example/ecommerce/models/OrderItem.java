@@ -23,6 +23,6 @@ public class OrderItem {
     private int quantity;
 
     @Column(precision = 10, scale = 2)
-    private BigDecimal price;
+    private long price;
 
 }

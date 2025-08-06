@@ -15,7 +15,8 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String customer;
+    @ManyToOne
+    private Customer customer;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date orderDate;

@@ -3,6 +3,7 @@ package com.example.ecommerce.service;
 import com.example.ecommerce.dto.CustomerDTO;
 import com.example.ecommerce.models.Customer;
 import com.example.ecommerce.repositories.CustomerRepository;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +12,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Data
 @RequiredArgsConstructor
 public class CustomerService {
 
