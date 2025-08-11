@@ -8,11 +8,13 @@ import com.example.ecommerce.models.OrderItem;
 import com.example.ecommerce.models.Product;
 import com.example.ecommerce.repositories.OrderRepository;
 import com.example.ecommerce.repositories.ProductRepository;
+import com.example.ecommerce.repositories.CustomerRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -25,12 +27,17 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 class OrderServiceTest {
+
     @Mock
     private OrderRepository orderRepository;
 
     @Mock
     private ProductRepository productRepository;
 
+    @Mock
+    private CustomerRepository customerRepository;
+
+    @Spy
     @InjectMocks
     private OrderService orderService;
 
@@ -59,11 +66,12 @@ class OrderServiceTest {
 
     @Test
     void createOrder_WithMultipleItems_ReturnsCorrectData() {
-        OrderItemDTO item1 = new OrderItemDTO(10L, 2, null);
-        OrderItemDTO item2 = new OrderItemDTO(20L, 1, null);
+        OrderItemDTO item1 = new OrderItemDTO(10L, 2, BigDecimal.valueOf(10000));
+        OrderItemDTO item2 = new OrderItemDTO(20L, 1, BigDecimal.valueOf(2000));
 
-        OrderDTO inputDto = new OrderDTO(customer, LocalDateTime.now(), List.of(item1, item2));
+        OrderDTO inputDto = new OrderDTO(1L, LocalDateTime.now(), List.of(item1, item2));
 
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
         when(productRepository.findById(10L)).thenReturn(Optional.of(laptop));
         when(productRepository.findById(20L)).thenReturn(Optional.of(phone));
 
@@ -73,8 +81,8 @@ class OrderServiceTest {
         savedOrder.setOrderDate(java.util.Date.from(inputDto.getOrderDate()
                 .atZone(java.time.ZoneId.systemDefault()).toInstant()));
 
-        OrderItem orderItem1 = new OrderItem(null, savedOrder, laptop, 2, BigDecimal.valueOf(10000));
-        OrderItem orderItem2 = new OrderItem(null, savedOrder, phone, 1, BigDecimal.valueOf(2000));
+        OrderItem orderItem1 = new OrderItem(10L, savedOrder, laptop, 2, BigDecimal.valueOf(10000));
+        OrderItem orderItem2 = new OrderItem(20L, savedOrder, phone, 1, BigDecimal.valueOf(2000));
         savedOrder.setItems(List.of(orderItem1, orderItem2));
 
         when(orderRepository.save(any(Order.class))).thenReturn(savedOrder);

@@ -9,7 +9,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderDTO {
-    private Customer customer;
+    private Long customerId;
     private LocalDateTime orderDate;
     private List<OrderItemDTO> items;
 }

@@ -25,10 +25,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class CustomerControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;
+    private MockMvc mockMvc; // simulate http reqs w/out real server
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private ObjectMapper objectMapper; // java dtos objects -> json
 
     @MockBean
     private CustomerService customerService;
@@ -40,11 +40,12 @@ class CustomerControllerTest {
         dto.setEmail("test@example.com");
         dto.setAddress("street 12");
 
+        // mock maps custServ -> dto
         when(customerService.createCustomer(any(CustomerDTO.class)))
                 .thenReturn(dto);
 
         mockMvc.perform(post("/api/customers")
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON) // body is json
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is("test")))

@@ -2,9 +2,11 @@ package com.example.ecommerce.service;
 
 import com.example.ecommerce.dto.OrderDTO;
 import com.example.ecommerce.dto.OrderItemDTO;
+import com.example.ecommerce.models.Customer;
 import com.example.ecommerce.models.Order;
 import com.example.ecommerce.models.OrderItem;
 import com.example.ecommerce.models.Product;
+import com.example.ecommerce.repositories.CustomerRepository;
 import com.example.ecommerce.repositories.OrderRepository;
 import com.example.ecommerce.repositories.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,10 +25,16 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
+    private final CustomerRepository customerRepository;
 
     public OrderDTO createOrder(OrderDTO dto) {
         Order order = new Order();
-        order.setCustomer(dto.getCustomer());
+
+        // load customer from DB using customerId instead of Customer object
+        Customer customer = customerRepository.findById(dto.getCustomerId())
+                .orElseThrow(() -> new RuntimeException("Customer not found: " + dto.getCustomerId()));
+        order.setCustomer(customer);
+
         order.setOrderDate(Date.from(dto.getOrderDate().atZone(ZoneId.systemDefault()).toInstant()));
 
         List<OrderItem> items = new ArrayList<>();
@@ -47,6 +55,7 @@ public class OrderService {
         Order savedOrder = orderRepository.save(order);
         return convertToDTO(savedOrder);
     }
+
 
     public List<OrderDTO> getAllOrders() {
         return orderRepository.findAll().stream()
@@ -70,9 +79,10 @@ public class OrderService {
                 .toList();
 
         return new OrderDTO(
-                order.getCustomer(),
+                order.getCustomer().getId(),
                 order.getOrderDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
                 items
         );
     }
+
 }
