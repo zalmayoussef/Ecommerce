@@ -3,6 +3,7 @@ package com.example.ecommerce.controllers;
 import com.example.ecommerce.dto.CustomerDTO;
 import com.example.ecommerce.service.CustomerService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -33,14 +34,12 @@ class CustomerControllerTest {
     @MockBean
     private CustomerService customerService;
 
+    EasyRandom easyRandom  = new EasyRandom();
+
     @Test
     void createCustomer_ReturnsCustomer() throws Exception {
-        CustomerDTO dto = new CustomerDTO();
-        dto.setName("test");
-        dto.setEmail("test@example.com");
-        dto.setAddress("street 12");
+        CustomerDTO dto = easyRandom.nextObject(CustomerDTO.class);
 
-        // mock maps custServ -> dto
         when(customerService.createCustomer(any(CustomerDTO.class)))
                 .thenReturn(dto);
 
@@ -48,22 +47,15 @@ class CustomerControllerTest {
                         .contentType(MediaType.APPLICATION_JSON) // body is json
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name", is("test")))
-                .andExpect(jsonPath("$.email", is("test@example.com")))
-                .andExpect(jsonPath("$.address", is("street 12")));
+                .andExpect(jsonPath("$.name", is(dto.getName())))
+                .andExpect(jsonPath("$.email", is(dto.getEmail())))
+                .andExpect(jsonPath("$.address", is(dto.getAddress())));
     }
 
     @Test
     void getAllCustomers_ReturnsList() throws Exception {
-        CustomerDTO dto1 = new CustomerDTO();
-        dto1.setName("test1");
-        dto1.setEmail("test1@example.com");
-        dto1.setAddress("street 12");
-
-        CustomerDTO dto2 = new CustomerDTO();
-        dto2.setName("test2");
-        dto2.setEmail("test2@example.com");
-        dto2.setAddress("street 14");
+        CustomerDTO dto1 = easyRandom.nextObject(CustomerDTO.class);
+        CustomerDTO dto2 = easyRandom.nextObject(CustomerDTO.class);
 
         when(customerService.getAllCustomers())
                 .thenReturn(Arrays.asList(dto1, dto2));
@@ -71,32 +63,25 @@ class CustomerControllerTest {
         mockMvc.perform(get("/api/customers"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].name", is("test1")))
-                .andExpect(jsonPath("$[1].name", is("test2")));
+                .andExpect(jsonPath("$[0].name", is(dto1.getName())))
+                .andExpect(jsonPath("$[1].name", is(dto2.getName())));
     }
 
     @Test
     void getCustomerById_Found() throws Exception {
-        CustomerDTO dto = new CustomerDTO();
-        dto.setName("test");
-        dto.setEmail("test@example.com");
-        dto.setAddress("streey 1");
+        CustomerDTO dto = easyRandom.nextObject(CustomerDTO.class);
 
         when(customerService.getCustomerById(1L))
                 .thenReturn(Optional.of(dto));
 
         mockMvc.perform(get("/api/customers/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name", is("test")));
+                .andExpect(jsonPath("$.name", is(dto.getName())));
     }
 
     @Test
     void updateCustomer_Found() throws Exception {
-        CustomerDTO dto = new CustomerDTO();
-        dto.setName("john");
-        dto.setEmail("john@example.com");
-        dto.setAddress("4 fareed street");
-
+        CustomerDTO dto = easyRandom.nextObject(CustomerDTO.class);
         when(customerService.updateCustomer(eq(1L), any(CustomerDTO.class)))
                 .thenReturn(Optional.of(dto));
 
@@ -104,8 +89,8 @@ class CustomerControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name", is("john")))
-                .andExpect(jsonPath("$.email", is("john@example.com")));
+                .andExpect(jsonPath("$.name", is(dto.getName())))
+                .andExpect(jsonPath("$.email", is(dto.getEmail())));
     }
 
     @Test
