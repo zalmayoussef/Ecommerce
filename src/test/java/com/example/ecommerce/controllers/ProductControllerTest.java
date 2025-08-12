@@ -3,6 +3,7 @@ package com.example.ecommerce.controllers;
 import com.example.ecommerce.dto.ProductDTO;
 import com.example.ecommerce.service.ProductService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,52 +36,50 @@ class ProductControllerTest {
     @MockBean
     private ProductService productService;
 
+    EasyRandom easyRandom = new EasyRandom();
+
     @Test
     void createProduct_ReturnsProduct() throws Exception {
-        ProductDTO dto = new ProductDTO(1L, "Laptop", "Gaming laptop", BigDecimal.valueOf(40000));
-
+        ProductDTO dto = easyRandom.nextObject(ProductDTO.class);
         when(productService.createProduct(any(ProductDTO.class))).thenReturn(dto);
 
         mockMvc.perform(post("/api/products")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(1)))
-                .andExpect(jsonPath("$.name", is("Laptop")))
-                .andExpect(jsonPath("$.description", is("Gaming laptop")))
-                .andExpect(jsonPath("$.price", is(40000)));
+                .andExpect(jsonPath("$.id", is(dto.getId())))
+                .andExpect(jsonPath("$.name", is(dto.getName())))
+                .andExpect(jsonPath("$.description", is(dto.getDescription())))
+                .andExpect(jsonPath("$.price", is(dto.getPrice())));
     }
 
     @Test
     void getAllProducts_ReturnsList() throws Exception {
-        ProductDTO p1 = new ProductDTO(1L, "laptop", "Gaming laptop", BigDecimal.valueOf(40000));
-        ProductDTO p2 = new ProductDTO(2L, "iphone", "Grey 15 pro max", BigDecimal.valueOf(20000));
-
+        ProductDTO p1 = easyRandom.nextObject(ProductDTO.class);
+        ProductDTO p2 = easyRandom.nextObject(ProductDTO.class);
         when(productService.getAllProducts()).thenReturn(Arrays.asList(p1, p2));
 
         mockMvc.perform(get("/api/products"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].name", is("laptop")))
-                .andExpect(jsonPath("$[1].name", is("iphone")));
+                .andExpect(jsonPath("$[0].name", is(p1.getName())))
+                .andExpect(jsonPath("$[1].name", is(p2.getName())));
     }
 
     @Test
     void getProductById_Found() throws Exception {
-        ProductDTO dto = new ProductDTO(1L, "Laptop", "Gaming laptop", BigDecimal.valueOf(40000));
-
+        ProductDTO dto = easyRandom.nextObject(ProductDTO.class);
         when(productService.getProductById(1L)).thenReturn(Optional.of(dto));
 
         mockMvc.perform(get("/api/products/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name", is("Laptop")))
-                .andExpect(jsonPath("$.price", is(40000)));
+                .andExpect(jsonPath("$.name", is(dto.getName())))
+                .andExpect(jsonPath("$.price", is(dto.getPrice())));
     }
 
     @Test
     void updateProduct_Found() throws Exception {
-        ProductDTO dto = new ProductDTO(1L, "samsung tv", "4k quality", BigDecimal.valueOf(45000));
-
+        ProductDTO dto = easyRandom.nextObject(ProductDTO.class);
         when(productService.updateProduct(eq(1L), any(ProductDTO.class)))
                 .thenReturn(Optional.of(dto));
 
@@ -88,8 +87,8 @@ class ProductControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name", is("samsung tv")))
-                .andExpect(jsonPath("$.price", is(45000)));
+                .andExpect(jsonPath("$.name", is(dto.getName())))
+                .andExpect(jsonPath("$.price", is(dto.getPrice())));
     }
 
     @Test
