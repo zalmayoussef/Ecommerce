@@ -30,16 +30,9 @@ class CustomerServiceTest {
 
     @Test
     void createCustomer_SavesAndReturnsDTO() {
-        CustomerDTO dto = new CustomerDTO();
-        dto.setName("John");
-        dto.setEmail("john@gmail.com");
-        dto.setAddress("street 19 maadi");
-
-        Customer savedCustomer = new Customer();
-        savedCustomer.setId(1L);
-        savedCustomer.setName("John");
-        savedCustomer.setEmail("john@gmail.com");
-        savedCustomer.setAddress("street 19 maadi");
+        EasyRandom easyRandom = new EasyRandom();
+        CustomerDTO dto = easyRandom.nextObject(CustomerDTO.class);
+        Customer savedCustomer = easyRandom.nextObject(Customer.class);
 
         when(customerRepository.save(any(Customer.class))).thenReturn(savedCustomer);
 
