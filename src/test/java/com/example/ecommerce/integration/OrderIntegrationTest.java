@@ -8,6 +8,7 @@ import com.example.ecommerce.repositories.CustomerRepository;
 import com.example.ecommerce.repositories.OrderRepository;
 import com.example.ecommerce.repositories.ProductRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -57,25 +57,20 @@ class OrderIntegrationTest {
         productRepository.deleteAll();
         customerRepository.deleteAll();
 
-        customer = new Customer();
-        // customer.setId(1L);
-        customer.setName("dude");
-        customer.setEmail("dude@gmail.com");
-        customer.setAddress("12 street");
+        EasyRandom easyRandom = new EasyRandom();
+
+        customer = easyRandom.nextObject(Customer.class);
+        customer.setOrders(null);
         customer = customerRepository.save(customer);
 
-        laptop = new Product();
-        laptop.setName("Laptop");
-        laptop.setDescription("Test laptop");
-        laptop.setPrice(BigDecimal.valueOf(50000));
+        laptop = easyRandom.nextObject(Product.class);
+        laptop.setOrderItems(null);
         laptop = productRepository.save(laptop);
     }
 
     @Test
     void createOrderAndsavesOrderSuccessfully() throws Exception {
-        // product per order
         OrderItemDTO item = new OrderItemDTO(laptop.getId(), 2, null);
-        // whole order, list of orders
         OrderDTO orderDTO = new OrderDTO(customer.getId(), LocalDateTime.now(), List.of(item));
 
         mockMvc.perform(post("/api/orders")
@@ -86,7 +81,6 @@ class OrderIntegrationTest {
                 .andExpect(jsonPath("$.items[0].productId").value(laptop.getId().intValue()))
                 .andExpect(jsonPath("$.items[0].quantity").value(2));
 
-        // verify in order repo
         assertThat(orderRepository.count()).isEqualTo(1);
     }
 }
