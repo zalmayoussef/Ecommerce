@@ -106,10 +106,10 @@ class OrderServiceTest {
         order.setId(1L);
         when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
 
-        Optional<OrderDTO> result = orderService.getOrderById(1L);
+        OrderDTO result = orderService.getOrderById(1L);
 
-        assertTrue(result.isPresent());
-        assertEquals(1, result.get().getItems().size());
+        assertNotNull(result);
+        assertEquals(1, result.getItems().size());
 
     }
 

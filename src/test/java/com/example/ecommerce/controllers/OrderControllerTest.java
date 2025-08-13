@@ -70,7 +70,7 @@ class OrderControllerTest {
     void getOrder_Found() throws Exception {
         OrderDTO dto = easyRandom.nextObject(OrderDTO.class);
 
-        when(orderService.getOrderById(1L)).thenReturn(Optional.of(dto));
+        when(orderService.getOrderById(1L)).thenReturn(dto);
 
         mockMvc.perform(get("/api/orders/1"))
                 .andExpect(status().isOk())

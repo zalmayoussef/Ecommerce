@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class CustomerControllerTest {
 
     @Autowired
-    private MockMvc mockMvc; // simulate http reqs w/out real server
+    private MockMvc mockMvc;
 
     @Autowired
     private ObjectMapper objectMapper; // java dtos objects -> json
