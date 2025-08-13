@@ -8,7 +8,7 @@ It simulates a basic online shopping platform where users can browse and purchas
 # Features
 - REST APIs for products and orders
 - Java 17 + Spring Boot 3
-- Unit tests using JUint
+- Unit & Integration tests using JUint & Mockito 
 - PostgreSQL (local setup)
 - Lombok for boilerplate reduction
 - Swagger documentation (/swagger-ui/index.html)
@@ -16,8 +16,10 @@ It simulates a basic online shopping platform where users can browse and purchas
 
 # What I Learned
 - Java 8 & 17 features.
-- Spring Boot essentials: beans annotations, dependency injection, health check, unit testing
+- Spring Boot essentials: beans annotations, dependency injection, health check, unit testing, integration testing
+- Exception handling
 - Lombok usage for entity and DTO classes
+- EasyRandom usage for test data generation 
 - Setting up pom.xml with required dependencies
 - Designing and documenting REST APIs
 - Organizing a clean and scalable folder structure in Spring Boot
@@ -27,6 +29,7 @@ It simulates a basic online shopping platform where users can browse and purchas
 - Java 17
 - Spring Boot
 - JUint
+- Mockito
 - PostgreSQL
 - Swagger 
 - Maven
