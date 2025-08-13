@@ -17,6 +17,9 @@ public class ProductService {
     private final ProductRepository productRepository;
 
     public ProductDTO createProduct(ProductDTO dto) {
+        if (dto == null) {
+            throw new IllegalArgumentException("product data must not be null");
+        }
         Product product = convertToEntity(dto);
         Product saved = productRepository.save(product);
         return convertToDTO(saved);
@@ -30,6 +33,9 @@ public class ProductService {
     }
 
     public Optional<ProductDTO> getProductById(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("product ID must not be null");
+        }
         return productRepository.findById(id).map(this::convertToDTO);
     }
 

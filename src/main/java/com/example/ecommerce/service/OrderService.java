@@ -2,6 +2,9 @@ package com.example.ecommerce.service;
 
 import com.example.ecommerce.dto.OrderDTO;
 import com.example.ecommerce.dto.OrderItemDTO;
+import com.example.ecommerce.exception.CustomerNotFoundException;
+import com.example.ecommerce.exception.OrderNotFoundException;
+import com.example.ecommerce.exception.ProductNotFoundException;
 import com.example.ecommerce.models.Customer;
 import com.example.ecommerce.models.Order;
 import com.example.ecommerce.models.OrderItem;
@@ -30,9 +33,8 @@ public class OrderService {
     public OrderDTO createOrder(OrderDTO dto) {
         Order order = new Order();
 
-        // load customer from DB using customerId instead of Customer object
         Customer customer = customerRepository.findById(dto.getCustomerId())
-                .orElseThrow(() -> new RuntimeException("Customer not found: " + dto.getCustomerId()));
+                .orElseThrow(() -> new CustomerNotFoundException(dto.getCustomerId()));
         order.setCustomer(customer);
 
         order.setOrderDate(Date.from(dto.getOrderDate().atZone(ZoneId.systemDefault()).toInstant()));
@@ -40,7 +42,7 @@ public class OrderService {
         List<OrderItem> items = new ArrayList<>();
         for (OrderItemDTO itemDTO : dto.getItems()) {
             Product product = productRepository.findById(itemDTO.getProductId())
-                    .orElseThrow(() -> new RuntimeException("Product not found: " + itemDTO.getProductId()));
+                    .orElseThrow(() -> new ProductNotFoundException(itemDTO.getProductId()));
 
             OrderItem item = new OrderItem();
             item.setOrder(order);
@@ -63,8 +65,10 @@ public class OrderService {
                 .toList();
     }
 
-    public Optional<OrderDTO> getOrderById(Long id) {
-        return orderRepository.findById(id).map(this::convertToDTO);
+    public OrderDTO getOrderById(Long id) {
+        return orderRepository.findById(id)
+                .map(this::convertToDTO)
+                .orElseThrow(() -> new OrderNotFoundException("Order not found"));
     }
 
     public boolean deleteOrder(Long id) {

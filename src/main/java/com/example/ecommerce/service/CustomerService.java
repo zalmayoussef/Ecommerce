@@ -1,10 +1,13 @@
 package com.example.ecommerce.service;
 
 import com.example.ecommerce.dto.CustomerDTO;
+import com.example.ecommerce.exception.CustomerAlreadyExistsException;
+import com.example.ecommerce.exception.CustomerNotFoundException;
 import com.example.ecommerce.models.Customer;
 import com.example.ecommerce.repositories.CustomerRepository;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.jeasy.random.EasyRandom;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,6 +22,18 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
 
     public CustomerDTO createCustomer(CustomerDTO customerDTO) {
+        if (customerDTO.getName() == null || customerDTO.getName().isBlank()) {
+            throw new IllegalArgumentException("Customer name is required");
+        }
+        if (customerDTO.getEmail() == null || customerDTO.getEmail().isBlank()) {
+            throw new IllegalArgumentException("Customer email is required");
+        }
+        if (customerRepository.findByEmail(customerDTO.getEmail()).isPresent()) {
+            throw new CustomerAlreadyExistsException(
+                    "Customer with email " + customerDTO.getEmail() + " already exists"
+            );
+        }
+
         Customer customer = new Customer();
         customer.setName(customerDTO.getName());
         customer.setEmail(customerDTO.getEmail());
@@ -34,8 +49,11 @@ public class CustomerService {
     }
 
     public Optional<CustomerDTO> getCustomerById(Long id) {
-        return customerRepository.findById(id).map(this::convertToDTO);
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new CustomerNotFoundException(id));
+        return Optional.of(convertToDTO(customer));
     }
+
 
     public Optional<CustomerDTO> updateCustomer(Long id, CustomerDTO dto) {
         return customerRepository.findById(id)
